@@ -574,7 +574,7 @@ def adzerk_request(keywords, num_placements=1, timeout=1.5, mobile_web=False):
     # When an adservers tags are returned they are rendered
     # directly, not as a reddit link.
     try:
-        if decisions['div0']['campaignId'] in g.adserver_camp_ids:
+        if decisions['div0']['campaignId'] in g.adserver_campaign_ids:
             return decisions['div0']['contents'][0]['body']
     except KeyError:
         pass
