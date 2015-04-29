@@ -619,7 +619,8 @@ class AdzerkApiController(api.ApiController):
             return
 
         # for adservers, adzerk returns markup so we pass it to the client
-        if type(response) == unicode:
+        if isinstance(response, unicode):
+            g.stats.simple_event('adzerk.request.adserver')
             return responsive(response)
 
         res_by_campaign = {r.campaign: r for r in response}
