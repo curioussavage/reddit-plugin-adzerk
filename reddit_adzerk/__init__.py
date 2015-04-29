@@ -24,7 +24,7 @@ class Adzerk(Plugin):
             'az_selfserve_priorities',
         ],
 
-        ConfigValue.tuple_of(ConfigValue.int) : [
+        ConfigValue.tuple_of(ConfigValue.int): [
             'adserver_camp_ids',
         ],
     }

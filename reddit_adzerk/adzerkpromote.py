@@ -573,8 +573,11 @@ def adzerk_request(keywords, num_placements=1, timeout=1.5, mobile_web=False):
 
     # When an adservers tags are returned they are rendered
     # directly, not as a reddit link.
-    if decisions['div0']['campaignId'] in g.adserver_camp_ids:
-        return decisions['div0']['contents'][0]['body']
+    try:
+        if decisions['div0']['campaignId'] in g.adserver_camp_ids:
+            return decisions['div0']['contents'][0]['body']
+    except KeyError:
+        pass
 
     res = []
     for div in divs:
@@ -615,6 +618,7 @@ class AdzerkApiController(api.ApiController):
             g.stats.simple_event('adzerk.request.no_promo')
             return
 
+        # for adservers, adzerk returns markup so we pass it to the client
         if type(response) == unicode:
             return responsive(response)
 
