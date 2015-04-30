@@ -513,6 +513,11 @@ def process_adzerk():
 AdzerkResponse = namedtuple('AdzerkResponse',
                     ['link', 'campaign', 'target', 'imp_pixel', 'click_url'])
 
+class AdserverResponse(object):
+    def __init__(self, body):
+        self.body = body
+
+
 def adzerk_request(keywords, num_placements=1, timeout=1.5, mobile_web=False):
     placements = []
     divs = ["div%s" % i for i in xrange(num_placements)]
@@ -571,7 +576,6 @@ def adzerk_request(keywords, num_placements=1, timeout=1.5, mobile_web=False):
     if not decisions:
         return None
 
-
     res = []
     for div in divs:
         decision = decisions[div]
@@ -580,7 +584,7 @@ def adzerk_request(keywords, num_placements=1, timeout=1.5, mobile_web=False):
 
         # adserver ads are not reddit links, we return the body
         if decision['campaignId'] in g.adserver_campaign_ids:
-            return adzerk_api.AdserverResponse(decision['contents'][0]['body'])
+            return AdserverResponse(decision['contents'][0]['body'])
 
         imp_pixel = decision['impressionUrl']
         click_url = decision['clickUrl']
@@ -616,7 +620,7 @@ class AdzerkApiController(api.ApiController):
             return
 
         # for adservers, adzerk returns markup so we pass it to the client
-        if isinstance(response, adzerk_api.AdserverResponse):
+        if isinstance(response, AdserverResponse):
             g.stats.simple_event('adzerk.request.adserver')
             return responsive(response.body)
 
