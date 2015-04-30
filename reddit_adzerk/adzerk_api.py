@@ -17,6 +17,9 @@ def handle_response(response):
     except ValueError:
         raise AdzerkError('bad response')
 
+class AdserverResponse(object):
+    def __init__(self, body):
+        self.body = body
 
 class Stub(object):
     def __init__(self, Id):

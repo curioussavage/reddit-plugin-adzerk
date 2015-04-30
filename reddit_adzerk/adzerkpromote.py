@@ -571,19 +571,16 @@ def adzerk_request(keywords, num_placements=1, timeout=1.5, mobile_web=False):
     if not decisions:
         return None
 
-    # When an adservers tags are returned they are rendered
-    # directly, not as a reddit link.
-    try:
-        if decisions['div0']['campaignId'] in g.adserver_campaign_ids:
-            return decisions['div0']['contents'][0]['body']
-    except KeyError:
-        pass
 
     res = []
     for div in divs:
         decision = decisions[div]
         if not decision:
             continue
+
+        # adserver ads are not reddit links, we return the body
+        if decision['campaignId'] in g.adserver_campaign_ids:
+            return adzerk_api.AdserverResponse(decision['contents'][0]['body'])
 
         imp_pixel = decision['impressionUrl']
         click_url = decision['clickUrl']
@@ -619,9 +616,9 @@ class AdzerkApiController(api.ApiController):
             return
 
         # for adservers, adzerk returns markup so we pass it to the client
-        if isinstance(response, unicode):
+        if isinstance(response, adzerk_api.AdserverResponse):
             g.stats.simple_event('adzerk.request.adserver')
-            return responsive(response)
+            return responsive(response.body)
 
         res_by_campaign = {r.campaign: r for r in response}
         tuples = [promote.PromoTuple(r.link, 1., r.campaign) for r in response]
